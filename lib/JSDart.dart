@@ -1,6 +1,7 @@
 import 'package:js/js.dart';
 import 'package:js_wasm/JSCSS2Properties.dart';
 import 'dart:typed_data';
+
 @JS("EventTarget")
 @staticInterop
 class JSEventTarget {}
@@ -12,6 +13,7 @@ extension JSEventTargetExtension on JSEventTarget {
 
   external bool dispatchEvent(JSEvent event);
 }
+
 @JS("localStorage")
 @staticInterop
 class JSLocalStorage {}
@@ -53,6 +55,7 @@ class JSCrypto {}
 extension JSCryptoExtension on JSCrypto {
   external TypedData getRandomValues(List<int> array);
 }
+
 @JS("Node")
 @staticInterop
 class JSNode extends JSEventTarget {}
@@ -125,6 +128,81 @@ extension JSEventExtension on JSEvent {
   external preventDefault();
 }
 
+@JS("Geoposition")
+@staticInterop
+class JSGeoPosition {}
+
+extension JSGeoPositionExtension on JSGeoPosition {
+  external JSGeolocationCoordinates? coords;
+  external int? timestamp;
+}
+
+@JS()
+@anonymous
+class JSGeolocationOptions {
+  external factory JSGeolocationOptions({
+    int maximumAge = 0,
+    int timeout = 9999999,
+    bool enableHighAccuracy = false,
+  });
+}
+
+@JS("Geolocation")
+@staticInterop
+class JSGeolocation {}
+
+extension JSGeolocationExtension on JSGeolocation {
+  external void getCurrentPosition(
+    Function(JSGeoPosition) success,
+    Function(JSGeolocationPositionError)? error,
+    JSGeolocationOptions? options,
+  );
+
+  external int watchPosition(Function(JSGeoPosition) success,
+      Function(JSGeolocationPositionError)? error,
+      JSGeolocationOptions? options,);
+}
+
+
+@JS("GeolocationPositionError")
+@staticInterop
+class JSGeolocationPositionError {}
+
+extension GeolocationPositionErrorExtension on JSGeolocationPositionError {
+  external String get message;
+
+  external int get code;
+}
+
+@JS("Coordinates")
+@staticInterop
+class JSGeolocationCoordinates {}
+
+extension JSGeolocationCoordinatesExtension on JSGeolocationCoordinates {
+  external double? latitude;
+  external double? longitude;
+  external double? altitude;
+  external double? accuracy;
+  external double? altitudeAccuracy;
+  external double? heading;
+  external double? speed;
+}
+
+@JS()
+@anonymous
+class PermissionDescriptor {
+  external factory PermissionDescriptor(
+      {String name, bool userVisibleOnly = false, bool sysex = false});
+}
+
+@JS("Promise")
+@staticInterop
+class JSPromise {}
+
+extension JSPromiseExtension on JSPromise {
+  external String state;
+}
+
 @JS("Navigator")
 @staticInterop
 class JSNavigator {}
@@ -139,6 +217,18 @@ extension JSNavigatorExtension on JSNavigator {
   external String get appVersion;
 
   external String get vendor;
+
+  external JSGeolocation get geolocation;
+
+  external JSPermissions get permissions;
+}
+
+@JS("Permissions")
+@staticInterop
+class JSPermissions {}
+
+extension JSPermissionsExtension on JSPermissions {
+  external JSPromise query(PermissionDescriptor permissionDescriptor);
 }
 
 @JS("Window")
@@ -147,6 +237,8 @@ class JSWindow extends JSEventTarget {}
 
 extension JSWindowExtension on JSWindow {
   external JSNavigator get navigator;
+
+  external JSLocation get location;
 
   external JSLocalStorage get localStorage;
 
@@ -499,11 +591,9 @@ external List<JSElement> querySelectorAll(String obj);
 
 @JS('window.atob')
 external String atob(String obj);
+
 @JS('window')
 external JSWindow get window;
-
-
-
 
 @JS("window.addEventListener")
 external void addEventListener(String event, Function callback);
